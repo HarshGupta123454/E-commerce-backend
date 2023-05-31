@@ -1,6 +1,8 @@
 import multer from "multer";
 import { Product } from "../schema";
 import path from "path"
+import fs from "fs"
+import customErrorHandler from "../services/customErrorHandler";
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, "uploads"),
     filename: (req, file, cb) => {
@@ -18,13 +20,22 @@ const handelMultipart = multer({
 const productController = {
     async store(req, res, next) {
         handelMultipart(req, res, async (err) => {
+            let images = [];
             if (err) {
+                images.map((ele) => {
+                    fs.unlink(ele.url)
+                })
                 console.log("error")
                 return next(err)
             }
             try {
-                const images = req.files.map((ele) => {
-                    return ele.path.replace(/\\/g, "/")
+                req.files.map((ele) => {
+                    images = [...images, {
+                        url: ele.path.replace(/\\/g, "/"),
+                        filename: ele.originalname,
+                        type: ele.mimetype,
+                        size: ele.size
+                    }]
                 })
                 let data = req.body
                 let colors = JSON.parse(req.body.colors)
@@ -35,24 +46,49 @@ const productController = {
 
                 }
                 console.log(data)
-                // const product = new Product(data)
-                // const result=await product.save()
-                // return res.status(201).json(result)
+                const product = new Product(data)
+                const result = await product.save()
+                return res.status(201).json(result)
 
-                res.send(req.body)
             } catch (error) {
-                console.log("erro array m g")
+                images.map((ele) => {
+                    fs.unlink(ele.url)
+                })
                 return next(error)
             }
         })
     },
     async display(req, res, next) {
         try {
-            const data = await Product.find()
-            res.json(data)
-        } catch (error) {
+            let data = await Product.find().select("-stock -reviews -stars")
+            let changeData = data.map((ele) => {
+                const { id, name, price, colors, description, category, featured } = ele
+                const image = ele.images[0].url;
 
+                return {
+                    id,
+                    name,
+                    price,
+                    colors,
+                    image,
+                    description,
+                    category,
+                    featured
+                }
+            })
+            res.json(changeData)
+        } catch (error) {
+            return next(error)
         }
+    },
+    async show(req, res, next) {
+        let document;
+        try {
+            document = await Product.findOne({ id: req.params.id }).select("-__v -_id")
+        } catch (error) {
+            return next(customErrorHandler.serviceError())
+        }
+        return res.json(document)
     }
 }
 

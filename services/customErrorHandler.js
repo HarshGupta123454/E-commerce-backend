@@ -1,23 +1,26 @@
-class customErrorHandler extends Error{
-    constructor(status,message){
+class customErrorHandler extends Error {
+    constructor(status, message) {
         super()
-        this.message=message,
-        this.status=status
+        this.message = message,
+            this.status = status
     }
-    static alreadyExist(message){
-        return new customErrorHandler(409,message)
+    static alreadyExist(message) {
+        return new customErrorHandler(409, message)
     }
-    static wrontCredential(message="wrong email and password"){
-        return new customErrorHandler(401,message)
+    static wrontCredential(message = "wrong email and password") {
+        return new customErrorHandler(401, message)
     }
-    static unauthorised(meaasge="unauthorised user"){
-        return new customErrorHandler(401,meaasge)
+    static unauthorised(meaasge = "unauthorised user") {
+        return new customErrorHandler(401, meaasge)
     }
-    static notFound(meaasge="user not found"){
-    return new customErrorHandler(404,meaasge)
+    static notFound(meaasge = "user not found") {
+        return new customErrorHandler(404, meaasge)
     }
     static unAuthorized(message = 'unAuthorized') {
         return new customErrorHandler(401, message);
+    }
+    static serviceError(meaasge = "id doesnt exist") {
+        return new customErrorHandler(500, message)
     }
 }
 
