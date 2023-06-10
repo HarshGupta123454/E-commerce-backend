@@ -52,7 +52,12 @@ const productController = {
 
             } catch (error) {
                 images.map((ele) => {
-                    fs.unlink(ele.url)
+                    fs.unlink(ele.url, (err) => {
+                        if (err) {
+                            console.log(err)
+                            return next(err)
+                        }
+                    })
                 })
                 return next(error)
             }

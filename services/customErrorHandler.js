@@ -22,6 +22,9 @@ class customErrorHandler extends Error {
     static serviceError(meaasge = "id doesnt exist") {
         return new customErrorHandler(500, message)
     }
+    static cartError(meaasge = "must be login before add to cart") {
+        return new customErrorHandler(401, message)
+    }
 }
 
 export default customErrorHandler
