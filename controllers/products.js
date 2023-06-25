@@ -67,7 +67,7 @@ const productController = {
         try {
             let data = await Product.find().select("-stock -reviews -stars")
             let changeData = data.map((ele) => {
-                const { id, name, price, colors, description, category, featured } = ele
+                const { id, name, price, colors, description, category, featured, company } = ele
                 const image = ele.images[0].url;
 
                 return {
@@ -76,6 +76,7 @@ const productController = {
                     price,
                     colors,
                     image,
+                    company,
                     description,
                     category,
                     featured

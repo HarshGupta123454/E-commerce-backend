@@ -6,5 +6,7 @@ export const {
     MONGO_URL,
     SECRET_KEY,
     REFRESH_SECRET,
-    URL_FOR_IMAGE
-}=process.env
+    URL_FOR_IMAGE,
+    EMAIL,
+    PASSWORD
+} = process.env
