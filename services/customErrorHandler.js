@@ -19,7 +19,7 @@ class customErrorHandler extends Error {
     static unAuthorized(message = 'unAuthorized') {
         return new customErrorHandler(401, message);
     }
-    static serviceError(meaasge = "id doesnt exist") {
+    static serviceError(message = "id doesnt exist") {
         return new customErrorHandler(500, message)
     }
     static cartError(meaasge = "must be login before add to cart") {

@@ -1,6 +1,6 @@
 import Joi from "joi";
 import customErrorHandler from "../../services/customErrorHandler";
-import { OTP, Tempuser, User } from "../../schema";
+import { OTP, Tempuser, User, refreshToken } from "../../schema";
 import bcrypt from "bcrypt"
 import tokenService from "../../services/token";
 import nodemailer from "nodemailer"
@@ -52,6 +52,7 @@ const registerController = {
         } catch (error) {
             return next(error)
         }
+        //to genrate the otp
         const otp = generateOTP()
         var option = {
             from: "",
@@ -95,12 +96,12 @@ const registerController = {
             const { email } = tokenService.verify(token)
             data = await OTP.findOne({ email })
         } catch (error) {
-            return next(customErrorHandler.unAuthorized("user not found"))
+            return next(customErrorHandler.unAuthorized("register again"))
         }
+        let authToken
         if (data) {
             if (data.otp === otp) {
                 const user = await Tempuser.findOne({ email: data.email }).select("name email password -_id")
-                console.log(user)
                 try {
                     if (user) {
                         var saveUser = new User(user)
@@ -108,15 +109,20 @@ const registerController = {
                         saveUser.isNew = true
                         const result = await saveUser.save()
                         await Tempuser.deleteOne({ email: user.email })
-                        console.log(result)
+                        authToken = tokenService.sign({ email: user.email }, "1d")
+                        const token = new refreshToken({ token: authToken })
+                        await token.save()
                     }
                 } catch (error) {
                     next(customErrorHandler.unAuthorized("again register"))
                     console.log(error)
                 }
+            } else {
+                next(customErrorHandler.wrontCredential("worng otp"))
             }
         }
-        res.json({ msg: "register successfully" })
+
+        res.json({ msg: "register successfully", authToken })
     }
 }
 export default registerController

@@ -1,14 +1,13 @@
 import { User } from "../../schema"
 import customErrorHandler from "../../services/customErrorHandler"
-const userController={
-    async me(req,res,next){
+const userController = {
+    async me(req, res, next) {
         try {
-            console.log(req.user)
-            const user = await User.findOne({_id:req.user.id}).select("-password -updatedAt -__v")
-            if(!user){
+            let user = await User.findOne({ email: req.user.email }).select("-password -updatedAt -__v")
+            if (!user) {
                 return next(customErrorHandler.notFound())
             }
-            res.json(user)
+            res.json({ name: user.name, isAuthenticated: true })
         } catch (error) {
             return next(error)
         }

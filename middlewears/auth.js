@@ -1,22 +1,21 @@
 import customErrorHandler from "../services/customErrorHandler"
 import tokenService from "../services/token"
 
-const auth=async(req,res,next)=>{
-    let authheader=req.headers.authorization
-    if(!authheader){
-        console.log("header not found")
+const auth = async (req, res, next) => {
+    let authheader = req.headers.authorization
+    if (!authheader) {
         return next(customErrorHandler.unAuthorized())
     }
-    const token=authheader.split(" ")[1]
+    const token = authheader.split(" ")[1]
+    console.log(token)
     try {
-        const {id}=tokenService.verify(token)
-        const user={
-            id
+        const { email } = tokenService.verify(token)
+        const user = {
+            email
         }
-        req.user=user
+        req.user = user
         next()
     } catch (error) {
-        console.log("error")
         return next(customErrorHandler.unAuthorized())
     }
 }

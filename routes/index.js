@@ -7,12 +7,15 @@ import userController from "../controllers/auth/userController";
 import refreshController from "../controllers/auth/refreshController";
 import productController from "../controllers/products";
 import add_to_cart from "../controllers/add-to-cart";
+
+//authentication routes
 router.post("/register", registerController.register)
 router.post("/otp", registerController.opt)
 router.post("/login", loginController.login)
 router.get("/me", auth, userController.me)
 router.post("/refresh", refreshController.refresh)
 router.post("/logout", loginController.logout)
+router.post("/forgot", loginController.reset)
 
 //for getting the products details for our website
 router.post("/product", productController.store)

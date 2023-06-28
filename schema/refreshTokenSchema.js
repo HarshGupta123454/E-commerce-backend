@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-const refreshSchema=new mongoose.Schema({
-    token:String
+const refreshSchema = new mongoose.Schema({
+    token: { type: String, required: true }
 })
 
-export default mongoose.model("Token",refreshSchema)
+export default mongoose.model("Token", refreshSchema)
